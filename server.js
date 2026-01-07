@@ -37,3 +37,51 @@ app.get('/allrides', async (req, res) => {
         res.status(500).json({message: 'Server error for allrides'});
     }
 });
+
+// add a new ride
+app.post('/addride', async (req, res) => {
+    const { ride_name, ride_pic } = req.body;
+    try {
+        let connection = await mysql.createConnection(dbConfig);
+        await connection.execute('INSERT INTO amusement_park (ride_name, ride_pic) VALUES (?, ?)', [ride_name, ride_pic]);
+        res.status(201).json({message: 'Ride '+ride_name+' added successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not add ride '+ride_name });
+    }
+});
+
+// update the list of rides
+app.put('/updateride/:id', async (req, res) => {
+    const { id } = req.params;
+    const { ride_name, ride_pic } = req.body;
+
+    try {
+        let connection = await mysql.createConnection(dbConfig);
+        const [result] = await connection.execute(
+            'UPDATE amusement_park SET ride_name = ?, ride_pic = ? WHERE id = ?',
+            [ride_name, ride_pic, id]
+        );
+        res.json({ message: `Ride ${id} updated successfully` });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not update ride' });
+    }
+});
+
+// delete an existing ride
+app.delete('/deleteride/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        let connection = await mysql.createConnection(dbConfig);
+        const [result] = await connection.execute(
+            'DELETE FROM amusement_park WHERE id = ?',
+            [id]
+        );
+        res.json({message: `Ride ${id} deleted successfully`});
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not delete ride' });
+    }
+});
