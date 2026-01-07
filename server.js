@@ -40,10 +40,10 @@ app.get('/allrides', async (req, res) => {
 
 // add a new ride
 app.post('/addride', async (req, res) => {
-    const { ride_name, ride_pic } = req.body;
+    const { ride_name, ride_image } = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
-        await connection.execute('INSERT INTO amusement_park (ride_name, ride_pic) VALUES (?, ?)', [ride_name, ride_pic]);
+        await connection.execute('INSERT INTO amusement_park (ride_name, ride_image) VALUES (?, ?)', [ride_name, ride_image]);
         res.status(201).json({message: 'Ride '+ride_name+' added successfully' });
     } catch (err) {
         console.error(err);
@@ -54,13 +54,13 @@ app.post('/addride', async (req, res) => {
 // update the list of rides
 app.put('/updateride/:id', async (req, res) => {
     const { id } = req.params;
-    const { ride_name, ride_pic } = req.body;
+    const { ride_name, ride_image } = req.body;
 
     try {
         let connection = await mysql.createConnection(dbConfig);
         const [result] = await connection.execute(
-            'UPDATE amusement_park SET ride_name = ?, ride_pic = ? WHERE id = ?',
-            [ride_name, ride_pic, id]
+            'UPDATE amusement_park SET ride_name = ?, ride_image = ? WHERE id = ?',
+            [ride_name, ride_image, id]
         );
         res.json({ message: `Ride ${id} updated successfully` });
     } catch (err) {
